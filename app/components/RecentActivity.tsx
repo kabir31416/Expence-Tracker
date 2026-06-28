@@ -95,29 +95,92 @@ export default function RecentActivities() {
   };
 
   const handleDeleteExpense = async () => {
-    if (!selectedExpense?._id) return;
+  if (!selectedExpense?._id) return;
 
-    try {
-      const res = await fetch(`${process.env.BASE_URL}/api/expence/${selectedExpense._id}`, {
-        method: "DELETE",
-      });
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
-      const data = await res.json();
-
-      if (res.ok && data.success) {
-        setExpenses((prev) => prev.filter((item) => item._id !== selectedExpense._id));
-        alert("Expense deleted successfully");
-      } else {
-        alert(data.message || "Failed to delete expense");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Something went wrong");
-    } finally {
-      setIsDeleteModalOpen(false);
-      setSelectedExpense(null);
+    if (!baseUrl) {
+      throw new Error("NEXT_PUBLIC_BASE_URL is not defined");
     }
-  };
+
+    const res = await fetch(
+      `${baseUrl}/api/expence/${selectedExpense._id}`,
+      {
+        method: "DELETE",
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || "Failed to delete expense");
+    }
+
+    setExpenses((prev) =>
+      prev.filter((item) => item._id !== selectedExpense._id)
+    );
+
+  } catch (err) {
+    console.error(err);
+
+  } finally {
+    setIsDeleteModalOpen(false);
+    setSelectedExpense(null);
+  }
+};
+
+  const handleUpdateExpense = async (
+  e: React.FormEvent<HTMLFormElement>
+) => {
+  e.preventDefault();
+
+  if (!selectedExpense?._id) return;
+
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+
+    if (!baseUrl) {
+      throw new Error("NEXT_PUBLIC_BASE_URL is not defined");
+    }
+
+    const res = await fetch(
+      `${baseUrl}/api/expence/${selectedExpense._id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: updateFormData.title,
+          amount: Number(updateFormData.amount),
+          category: updateFormData.category,
+          date: updateFormData.date,
+        }),
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || "Failed to update expense");
+    }
+
+    setExpenses((prev) =>
+      prev.map((item) =>
+        item._id === selectedExpense._id
+          ? data.updatedExpense
+          : item
+      )
+    );
+
+    setIsUpdateModalOpen(false);
+    setSelectedExpense(null);
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong");
+  }
+};
 
 
   const openUpdateModal = (expense: Expense) => {
@@ -137,41 +200,7 @@ export default function RecentActivities() {
     setUpdateFormData({ ...updateFormData, [e.target.name]: e.target.value });
   };
 
-  const handleUpdateExpense = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!selectedExpense?._id) return;
-
-    try {
-      const res = await fetch(`${process.env.BASE_URL}/api/expence/${selectedExpense._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: updateFormData.title,
-          amount: Number(updateFormData.amount),
-          category: updateFormData.category,
-          date: updateFormData.date,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok && data.success) {
-        setExpenses((prev) =>
-          prev.map((item) => (item._id === selectedExpense._id ? data.updatedExpense : item))
-        );
-        alert("Expense updated successfully");
-        setIsUpdateModalOpen(false);
-        setSelectedExpense(null);
-      } else {
-        alert(data.message || "Failed to update expense");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Something went wrong");
-    }
-  };
+  
 
   const getCategoryColor = (category: string): string => {
     switch (category) {

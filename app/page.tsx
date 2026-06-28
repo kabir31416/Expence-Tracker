@@ -30,40 +30,45 @@ export default function Home() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+ const handleSubmit = async (
+  e: React.FormEvent<HTMLFormElement>
+) => {
+  e.preventDefault();
 
-    try {
-      const response = await fetch(
-        `${process.env.BASE_URL}/api/expence`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Error saving spends:", errorData.message);
-      } else {
-        const savedSpends = await response.json();
-        console.log("Successfully saved:", savedSpends);
-
-        // সফলভাবে সাবমিট হওয়ার পর ফর্ম রিসেট করতে চাইলে:
-        setFormData({
-          title: "",
-          amount: "",
-          category: "Food",
-          date: "",
-        });
-      }
-    } catch (error) {
-      console.error("Network error:", error);
+    if (!baseUrl) {
+      throw new Error("NEXT_PUBLIC_BASE_URL is not defined");
     }
-  };
+
+    const response = await fetch(`${baseUrl}/api/expence`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to save expense");
+    }
+
+    console.log("Successfully saved:", data);
+
+    setFormData({
+      title: "",
+      amount: "",
+      category: "Food",
+      date: "",
+    });
+
+  } catch (error) {
+    console.error("Network error:", error);
+  }
+};
 
   const fetchExpenses = async () => {
   try {
