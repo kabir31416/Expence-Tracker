@@ -2,7 +2,7 @@
 
 import { FaWallet, FaPlus, FaArrowUp, FaArrowDown, FaRegCalendarAlt } from "react-icons/fa";
 import RecentActivities from "./components/RecentActivity";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import AnalyticsCards from "./components/AnalyticsCards";
 
@@ -210,7 +210,9 @@ export default function Home() {
           </div>
 
           {/* History Section */}
-          <RecentActivities></RecentActivities>
+          <Suspense>
+            <RecentActivities></RecentActivities>
+          </Suspense>
         </div>
       </div>
     </main>
