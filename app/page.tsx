@@ -1,9 +1,8 @@
 "use client"
 
-import { FaWallet, FaPlus, FaArrowUp, FaArrowDown, FaRegCalendarAlt } from "react-icons/fa";
+import { FaWallet, FaPlus } from "react-icons/fa";
 import RecentActivities from "./components/RecentActivity";
 import { Suspense, useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import AnalyticsCards from "./components/AnalyticsCards";
 
 interface Expense {
