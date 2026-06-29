@@ -124,15 +124,6 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3 self-start rounded-2xl border border-slate-100 bg-white/80 p-3 shadow-sm backdrop-blur-md sm:self-center">
-            <div className="rounded-xl bg-slate-50 p-2 text-slate-500">
-              <FaRegCalendarAlt size={16} />
-            </div>
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Today</p>
-              <h2 className="text-sm font-semibold text-slate-700">28 June 2026</h2>
-            </div>
-          </div>
         </div>
 
         {/* Top Analytics Cards Grid */}
